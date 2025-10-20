@@ -10,26 +10,31 @@ const SignIn = () => {
   const [error, setError] = useState('');
   const setUser = useAuthStore((state) => state.setUser);
 
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setError('');
+ const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  e.preventDefault();
+  setError('');
 
-    const formData = new FormData(e.currentTarget);
-    const formValues = Object.fromEntries(formData) as Auth;
+  const formData = new FormData(e.currentTarget);
+  const formValues = Object.fromEntries(formData) as Auth;
 
-    try {
-      const res = await login(formValues);
-      if (res) {
-        setUser({ email: formValues.email }); 
-        router.push('/profile');
-      } else {
-        setError('Invalid email or password');
-      }
-    } catch (err: any) {
-      console.error('Login error:', err.response?.data || err);
-      setError(err.response?.data?.message || 'Invalid email or password');
+  try {
+    const res = await login(formValues);
+    if (res) {
+      setUser({ email: formValues.email }); 
+      router.push('/profile');
+    } else {
+      setError('Invalid email or password');
     }
-  };
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      console.error('Login error:', err.message);
+      setError(err.message);
+    } else {
+      setError('Invalid email or password');
+    }
+  }
+};
+
 
   return (
     <main className={css.mainContent}>

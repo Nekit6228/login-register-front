@@ -5,6 +5,7 @@ import { Auth, register } from '@/lib/authApi';
 import { useState, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/lib/authStore';
+import axios from 'axios';
 
 const SignUp = () => {
   const router = useRouter();
@@ -26,10 +27,16 @@ const SignUp = () => {
       } else {
         setError('Invalid email or password');
       }
-    } catch (err: any) {
-      console.error('Registration error:', err.response?.data || err);
-      setError(err.response?.data?.message || 'Invalid email or password');
-    }
+    } catch (err: unknown) {
+  if (axios.isAxiosError(err)) {
+    setError(err.response?.data?.message || 'Invalid email or password');
+  } else if (err instanceof Error) {
+    setError(err.message);
+  } else {
+    setError('Invalid email or password');
+  }
+}
+
   };
 
   return (
