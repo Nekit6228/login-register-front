@@ -3,27 +3,30 @@ import { useState, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import { Auth, register } from '@/lib/authApi';
 import css from './SingUp.module.css';
+import { useAuthStore } from '@/lib/authStore';
 
 const SignUp = () => {
   const router = useRouter();
   const [error, setError] = useState('');
+  const setUser = useAuthStore((state) => state.setUser);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+    e.preventDefault(); 
     setError('');
 
-    const formData = new FormData(e.currentTarget);
-    const formValues = Object.fromEntries(formData) as Auth;
-
     try {
+      const formData = new FormData(e.currentTarget);
+      const formValues = Object.fromEntries(formData) as Auth;
+
       const res = await register(formValues);
       if (res) {
-        // После успешной регистрации редиректим на login
-        router.push('/login');
+        setUser(res);
+        router.push('/profile'); 
       } else {
         setError('Invalid email or password');
       }
-    } catch (err: unknown) {
+    } catch (error) {
+      console.log('error', error);
       setError('Invalid email or password');
     }
   };
