@@ -1,14 +1,12 @@
 'use client';
 import { useState, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuthStore } from '@/lib/authStore';
 import { Auth, register } from '@/lib/authApi';
 import css from './SingUp.module.css';
 
 const SignUp = () => {
   const router = useRouter();
   const [error, setError] = useState('');
-  const setUser = useAuthStore((state) => state.setUser);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -20,8 +18,8 @@ const SignUp = () => {
     try {
       const res = await register(formValues);
       if (res) {
-        setUser({ email: formValues.email });
-        router.push('/profile');
+        // После успешной регистрации редиректим на login
+        router.push('/login');
       } else {
         setError('Invalid email or password');
       }
